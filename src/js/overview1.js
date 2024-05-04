@@ -21,6 +21,7 @@ async function getDatas() {
                     <h3 class="card-title">${data.model}</h3>
                     <p class="card-text"></p>
                     <div class="d-flex justify-content-center align-items-center">
+                    // TODO must click the testFunction here
                     <button class="text-white custom-btn" id="index" data-index="${index}"><a style="text-decoration: none;" class="link-light">View ${index}</a></button>
                 </div>
                   </div>
@@ -39,7 +40,7 @@ function testFunction(index) {
   // localStorage.setItem("laptop_info", JSON.stringify(laptops[index]));
   console.log(index);
 }
-
+// [ ] Need to fix the index inside testFunction
 getDatas();
 document.body.addEventListener("click", function (event) {
   if (event.target.id === "index") {
