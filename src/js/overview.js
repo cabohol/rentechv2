@@ -55,21 +55,21 @@ form_add.onsubmit = async (e) => {
 
   const { data, error } = await supabase
     .from("laptops")
-  .insert([
+    .insert([
       {
         model: formData.get("model"),
-    price: formData.get("price"),
-    specs: formData.get("specs"),
-    condition: formData.get("condition"),
-    image_path: formData.get("image_path"),
-  },
-  ])
-  .select();
+        price: formData.get("price"),
+        specs: formData.get("specs"),
+        condition: formData.get("condition"),
+        image_path: formData.get("image_path"),
+      },
+    ])
+    .select();
   if (error) {
     console.error("Error adding laptop:", error.message);
-} else {
+  } else {
     console.log("Laptop added successfully:", data);
     // Redirect to home page or trigger a refresh to update the displayed laptops
     window.location.href = "home.html";
-}
+  }
 };
