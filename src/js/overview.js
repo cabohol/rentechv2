@@ -28,29 +28,57 @@ async function getDatas() {
   laptops.forEach((data) => {
 
     container += `
-    <div class="col">
-  <div class="card" id="cards" data-id="${data.id}" >
-      <img src="${data.image_path}" class="card-img-top pt-2 mx-auto" alt="...">
-      <div class="card-body">
-        <div class="row text-center">
-          <h3 class="card-title">${data.model}</h3>
-          <h6>P${data.price}/hr</h6>
-          <p class="card-text"></p>
-          <div class="d-flex justify-content-center align-items-center">
-              <button class="text-white custom-btn"><a style="text-decoration: none;" class="link-light" href="viewmore.html">View More</a></button>
-          </div>
-           
-        </div>
-      </div>
-  </div>
-</div>
+    <div class="row align-items-center px-5 pt-3">
+    <div class="col text-start">
+      <button
+        type="button"
+        id="buttoncancel"
+        data-id="${data.id}"
+        class="btn btn text-white"
+      >
+       Delete
+      </button>
+    </div>
+    <div class="col text-end">
+      <button type="button" id="buttonsave" data-id="${data.id}" class="btn btn text-white">
+       Save
+      </button>
+    </div>
+    </div>
       `;
   });
 
   document.getElementById("cardsContainer").innerHTML = container;
+
+
+}
+// Event delegation for delete action
+document.addEventListener("click", function(event) {
+  if (event.target && event.target.id === "#buttoncancel") {
+    deleteAction(event);
+  }
+});
+
+// DELETE FUNCTIONALITY
+const deleteAction = async (e) => {
+  const id = e.target.getAttribute("data-id");
+  alert(id);
+
+  //e.preventDefault(); // Prevent the default action of the button
+  //alert("Button Cancel Clicked");
+  //console.log("Buttoncancel clicked");
 }
 
-form_add.onsubmit = async (e) => {
+
+
+
+
+
+
+
+
+
+/*form_add.onsubmit = async (e) => {
   e.preventDefault();
   const formData = new FormData (form_add);
 
@@ -72,4 +100,4 @@ form_add.onsubmit = async (e) => {
     // Redirect to home page or trigger a refresh to update the displayed laptops
     window.location.href = "home.html";
 }
-};
+};  */
