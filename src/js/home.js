@@ -1,16 +1,13 @@
 import { supabase } from "./name";
 
-let allLaptops = []; // This array will store all laptop data
+let allLaptops = [];  // This array will store all laptop data
 
 document.addEventListener("DOMContentLoaded", async () => {
   await loadAllLaptops();
 });
 
 document.getElementById("btnsearch").addEventListener("click", () => {
-  const keyword = document
-    .querySelector('input[name="search"]')
-    .value.trim()
-    .toLowerCase();
+  const keyword = document.querySelector('input[name="search"]').value.trim().toLowerCase();
   filterLaptops(keyword);
 });
 
@@ -23,14 +20,14 @@ async function loadAllLaptops() {
     return;
   }
 
-  allLaptops = laptops; // Store the fetched laptops globally
-  displayLaptops(allLaptops); // Display all laptops initially
+  allLaptops = laptops;  // Store the fetched laptops globally
+  displayLaptops(allLaptops);  // Display all laptops initially
 }
 
 // Function to display laptops
 function displayLaptops(laptops) {
   let container = document.getElementById("cardsContainer");
-  container.innerHTML = ""; // Clear the container before loading new data
+  container.innerHTML = "";  // Clear the container before loading new data
 
   laptops.forEach((laptop) => {
     container.innerHTML += `
@@ -56,8 +53,8 @@ function displayLaptops(laptops) {
 
 // Function to filter laptops based on search keyword
 function filterLaptops(keyword) {
-  const filteredLaptops = allLaptops.filter((laptop) =>
+  const filteredLaptops = allLaptops.filter(laptop => 
     laptop.model.toLowerCase().includes(keyword)
   );
-  displayLaptops(filteredLaptops); // Redisplay laptops based on search
+  displayLaptops(filteredLaptops);  // Redisplay laptops based on search
 }
