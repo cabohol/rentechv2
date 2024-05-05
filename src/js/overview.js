@@ -1,6 +1,5 @@
 import { supabase } from "./name";
 
-
 const itemsImageUrl =
   "https://vlzwiqqexbsievtuzfgm.supabase.co/storage/v1/object/public/laptops/";
 
@@ -15,7 +14,8 @@ document.getElementById("model").value = JSON.parse(laptop_info).model;
 document.getElementById("price").value = JSON.parse(laptop_info).price;
 document.getElementById("specs").value = JSON.parse(laptop_info).specs;
 document.getElementById("condition").value = JSON.parse(laptop_info).condition;
-document.getElementById("image_path").value = JSON.parse(laptop_info).image_path;
+document.getElementById("image_path").value =
+  JSON.parse(laptop_info).image_path;
 //getDatas();
 // btn_logout.onclick = doLogout;
 
@@ -26,7 +26,6 @@ async function getDatas() {
   let container = "";
 
   laptops.forEach((data) => {
-
     container += `
     <div class="col">
   <div class="card" id="cards" data-id="${data.id}" >
@@ -52,12 +51,13 @@ async function getDatas() {
 
 form_add.onsubmit = async (e) => {
   e.preventDefault();
-  const formData = new FormData (form_add);
+  const formData = new FormData(form_add);
 
   const { data, error } = await supabase
-  .from('laptops')
+    .from("laptops")
   .insert([
-    { model: formData.get("model") ,
+      {
+        model: formData.get("model"),
     price: formData.get("price"),
     specs: formData.get("specs"),
     condition: formData.get("condition"),
