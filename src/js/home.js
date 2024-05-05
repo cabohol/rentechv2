@@ -1,9 +1,21 @@
 import { supabase } from "./name";
 
-//const userId = localStorage.getItem("user_id");
-//console.log("User ID:", userId);
+let allLaptops = []; // This array will store all laptop data
 
-async function getDatas() {
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadAllLaptops();
+});
+
+document.getElementById("btnsearch").addEventListener("click", () => {
+  const keyword = document
+    .querySelector('input[name="search"]')
+    .value.trim()
+    .toLowerCase();
+  filterLaptops(keyword);
+});
+
+// Function to load all laptops from the database
+async function loadAllLaptops() {
     let { data: laptops, error } = await supabase.from("laptops").select("*");
 
     if (error) {
