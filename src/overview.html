@@ -32,7 +32,6 @@
     />
     <script type="module" src="./js/name.js"></script>
     <script type="module" src="./js/overview.js"></script>
-    <script type="module" src="./js/add.js"></script>
     <meta name="theme-color" content="#31d53d" />
   </head>
   <body>
@@ -132,7 +131,6 @@
                 type="file"
                 name="image_path"
                 id="image_path"
-                required
               />
 
               
@@ -143,20 +141,11 @@
             
               <div class="row align-items-center px-5 pt-3" id="get_data">
                 <div class="col text-start">
-                  <button
-                    type="button"
-                    id="buttoncancel"
-                    class="btn btn text-white"
-                  >
-                   Delete
-                  </button>
+                  <button id="buttoncancel" class="btn btn-danger">Delete</button>
                 </div>
                 <div class="col text-end">
-                  <button type="button" id="buttonsave" class="btn btn text-white">
-                  
-                    <!--<i class="bi bi-pencil-square"></i> -->
-                    Save
-                  </button>
+                  <button id="buttonsave" class="btn btn-success">Save</button>
+
                 </div>
               </div>
         
