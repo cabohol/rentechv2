@@ -36,7 +36,7 @@ function displayLaptops(laptops) {
   laptops.forEach((laptop) => {
     container.innerHTML += `
       <div class="col">
-      <div class="card" data-id="${laptop.id}">
+      <div class="card" id="cards" data-id="${laptop.id}">
         <img src="${itemsImageUrl +  laptop.image_path}" class="card-img-top pt-2 mx-auto" alt="...">
         <div class="card-body">
           <div class="row text-center">
