@@ -5,14 +5,10 @@ let laptops = []; // Tukuyin ang laptops sa labas ng getDatas function at bigyan
 
 const itemsImageUrl =
   "https://vlzwiqqexbsievtuzfgm.supabase.co/storage/v1/object/public/laptops/";
-
-
-
-
 async function getDatas() {
   let { data, error } = await supabase.from("laptops").select("*");
   laptops = data || []; // Isalin ang data sa laptops, kung wala, ilagay ang kahon
-  console.log(laptops);
+  // console.log(laptops);
   let userId = localStorage.getItem("user_id");
   if (error) {
     console.error("Error fetching laptops:", error.message);
