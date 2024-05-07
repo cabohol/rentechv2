@@ -16,7 +16,7 @@ async function getDatas() {
     let container = "";
     laptops.forEach((data, index) => {
       if (data.userinformation_id == userId) {
-        container += `
+        container += ` 
           <div class="col">
             <div class="card" id="cards" data-id="${data.id}">
               <img src="${itemsImageUrl}${data.image_path}" class="card-img-top pt-2 mx-auto" alt="...">
