@@ -1,13 +1,8 @@
 import { supabase } from "./name";
 
-const itemsImageUrl =
-  "https://vlzwiqqexbsievtuzfgm.supabase.co/storage/v1/object/public/laptops/";
-
-
 // Fetch elements once the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
     let laptop_info = localStorage.getItem("laptop_info");
-    console.log(laptop_info);
 
     // Check if laptop_info exists and parse it
     if (laptop_info) {
@@ -21,82 +16,30 @@ document.addEventListener('DOMContentLoaded', function () {
         const imagePath = laptop_info.image_path;
         document.getElementById("image_path").textContent = imagePath;
       }
-      
-    // Setup event listeners for buttons
-    setupEventListeners();
 });
 
-function setupEventListeners() {
-    // Delete button
-    const buttonCancel = document.getElementById("buttoncancel");
-    if (buttonCancel) {
-        buttonCancel.addEventListener("click", deleteItem);
-    } else {
-        console.log('Delete button not found');
-    }
+document
+  .getElementById("buttonDelete")
+  .addEventListener("click", async function (event) {
+    let laptop_info = localStorage.getItem("laptop_info");
+    await deleteItem(JSON.parse(laptop_info).id);
+  });
+document
+  .getElementById("buttonSave")
+  .addEventListener("click", async function (event) {
+    let laptop_info = localStorage.getItem("laptop_info");
+    await updateItem(JSON.parse(laptop_info));
+  });
 
-    // Save button
-    const buttonSave = document.getElementById("buttonsave");
-    if (buttonSave) {
-        buttonSave.addEventListener("click", editItem);
-    } else {
-        console.log('Save button not found');
-    }
+async function deleteItem(id) {
+  const { error } = await supabase.from("laptops").delete().eq("id", id);
+  window.location.pathname = "/overview1.html"; // Adjust the URL as needed
 }
-async function deleteItem(e) {
-  const id = e.target.dataset.id; // Assuming you pass the id as a data attribute
-  try {
-      const { error } = await supabase
-          .from('laptops')
-          .delete()
-          .eq('id', id);
-
-      if (error) {
-          throw error;
-      }
-
-      console.log('Item deleted successfully');
-      // Redirect to overview1 page
-      window.location.href = '/overview1.html'; // Adjust the URL as needed
-  } catch (error) {
-      console.error('Error deleting item:', error.message);
-  }
-}
-// Function to fetch laptop data from Supabase
-async function getDatas() {
-    let { data: laptops, error } = await supabase.from("laptops").select("*");
-    if (error) {
-        console.error('Error fetching laptops:', error);
-        return;
-    }
-
-    // Assume here that you might want to do something with the fetched laptops
-    console.log('Fetched laptops:', laptops);
-}
-
-
-
-/*form_add.onsubmit = async (e) => {
-  e.preventDefault();
-  const formData = new FormData(form_add);
-
+async function updateItem(objectItem) {
   const { data, error } = await supabase
     .from("laptops")
-    .insert([
-      {
-        model: formData.get("model"),
-        price: formData.get("price"),
-        specs: formData.get("specs"),
-        condition: formData.get("condition"),
-        image_path: formData.get("image_path"),
-      },
-    ])
+    .update({ model: "otherValue", price: "otherValue", specs: "otherValue",  condition: "otherValue", imagePath: "otherValue",})
+    .eq("id", objectItem.id)
     .select();
-  if (error) {
-    console.error("Error adding laptop:", error.message);
-  } else {
-    console.log("Laptop added successfully:", data);
-    // Redirect to home page or trigger a refresh to update the displayed laptops
-    window.location.href = "home.html";
+  window.location.pathname = "/overview1.html"; // Adjust the URL as needed
 }
-};  */
