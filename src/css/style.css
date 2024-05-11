@@ -212,6 +212,15 @@
     font-size: 20px;
   }
 
+  .fa-star {
+    color: #ccc; /* Default color for empty stars */
+    font-size: 18px; /* Adjust size as needed */
+  }
+
+  .fa-star {
+    color: #ffc107; /* Bootstrap's default yellow color used for stars */
+  }
+
   .custom-btn {
     padding: 8px 16px;
     font-size: 14px;
