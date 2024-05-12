@@ -64,10 +64,27 @@ document
     const price = document.getElementById("price").value;
     const specs = document.getElementById("specs").value;
     const condition = document.getElementById("condition").value;
-    //const imagePath = document.getElementById("image_path").textContent;
-    let imgElement = document.getElementById("image_path");
+    const image = document.getElementById("image_path");
 
+    // Upload image to Supabase storage
+    const { data: storageData, error: storageError } = await supabase.storage
+      .from('laptops')
+      .upload('public/' + image.name, image, {
+        cacheControl: "3600",
+        upsert: true,
+      });
 
+    // Handle storage errors if any
+    if (storageError) {
+      console.error('Storage upload error:', storageError);
+      alert('Failed to upload image: ' + storageError.message);
+      saveButton.disabled = false;
+      saveButton.textContent = 'Save';
+      return;
+    }
+
+    // Update item in Supabase with image path
+    const image_path = storageData.Key; // Assuming the image path is in storageData.Key
     let laptop_info = localStorage.getItem("laptop_info");
     if (laptop_info) {
       laptop_info = JSON.parse(laptop_info);
@@ -88,7 +105,8 @@ async function updateItem(updatedItem) {
       condition: updatedItem.condition, 
       image_path: updatedItem.image_path
     })
-    .eq("id", updatedItem.id);
+    .eq("id", updatedItem.id)
+    .select();
   if (error) {
     console.error('Update error:', error);
     alert('Failed to save changes: ' + error.message);
