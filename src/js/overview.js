@@ -121,10 +121,11 @@ form_add.onsubmit = async (e) => {
       if (error) {
         console.error("Error updating laptop:", error);
       } else {
-        console.log("Laptop successfully updated!");
+        alert("Laptop successfully updated!");
         // Reset storage id
         update_laptops = "";
         /* reload datas */
+        window.location.href="home.html"
       }
     }
   } catch (error) {
