@@ -21,9 +21,9 @@ const laptopDetails = async (dataId) => {
     Laptops.forEach((laptop) => {
       view_container += `<div data-id="${
         laptop.image_path
-      }"><img class="block my-2 border border-light border-2 rounded-circle" src="${
+      }"><img class="d-block w-75 mx-auto" src="${
         itemsImageUrl + laptop.image_path
-      }" width="100%" height="200rem"></div>
+      }" "></div>
    `;
     });
     document.getElementById("view_cont").innerHTML = view_container;
@@ -125,7 +125,7 @@ form_add.onsubmit = async (e) => {
         // Reset storage id
         update_laptops = "";
         /* reload datas */
-        window.location.href="home.html"
+        window.location.pathname="overview1.html"
       }
     }
   } catch (error) {

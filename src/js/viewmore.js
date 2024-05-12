@@ -3,9 +3,12 @@ import { supabase } from "./name";
 const itemsImageUrl = "https://vlzwiqqexbsievtuzfgm.supabase.co/storage/v1/object/public/laptops/";
 
 document.addEventListener('DOMContentLoaded', async function () {
-    console.log("DOMContentLoaded event fired."); // Check that the event fires correctly
+    console.log("DOMContentLoaded event fired.");
     const laptopInfoString = localStorage.getItem("laptop_info");
     const laptopInfo = laptopInfoString ? JSON.parse(laptopInfoString) : null;
+    const userId = JSON.parse(localStorage.getItem("user_id"));
+
+    console.log("User ID:", userId);
 
     if (!laptopInfo) {
         console.log("No laptop information found in local storage.");
@@ -22,8 +25,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 .eq("id", laptopInfo.userinformation_id)
                 .single();
 
-            console.log('Fetched user details:', userDetails); // Log fetched details
-
             if (error) {
                 console.error('Failed to fetch user details:', error);
                 return;
@@ -31,7 +32,20 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             if (userDetails) {
                 displayUserDetails(userDetails);
-                setupRatingSubmission(userDetails.id, laptopInfo.id, userDetails); // Pass user ID, laptop ID, and userDetails to setupRatingSubmission
+
+                if (userDetails.id === userId) {
+                    console.log('User is viewing their own laptop. Rating disabled.');
+                    alert('User is viewing their own laptop. Rating disabled.');
+
+                    const feedbtn = document.getElementById('feedbtn');
+                    if (feedbtn) {
+                        feedbtn.disabled = true;
+                        feedbtn.style.pointerEvents = 'none';
+                        feedbtn.style.opacity = '0.5';
+                    }
+                } else {
+                    setupRatingSubmission(userId, laptopInfo.id);
+                }
             } else {
                 console.log("No user details found for the provided user ID.");
             }
@@ -61,57 +75,54 @@ function displayUserDetails(userDetails) {
     document.getElementById("fb_link").children[1].textContent = userDetails.first_name + " " + userDetails.last_name;
 }
 
-console.log("User ID being used for rating:", userId);
-
-async function setupRatingSubmission(userId, laptopId, userDetails) {
-    console.log("Setup rating with User ID:", userId);  // Check if the correct user ID is being passed
+async function setupRatingSubmission(userId, laptopId) {
     const submitBtn = document.getElementById('feedbtn');
     if (!submitBtn) {
         console.error('Submit button not found');
         return;
     }
     submitBtn.addEventListener('click', async function(event) {
-        event.preventDefault(); // Prevent the form from submitting which would refresh the page
-        console.log("Submitting rating for User ID:", userId);  // Log to verify right before submission
-        await submitRating(userId, laptopId, userDetails);
+        event.preventDefault();  // Prevent the form from submitting
+        await submitRating(userId, laptopId);  // Pass userId and laptopId to submitRating
     });
 }
-
 
 document.querySelectorAll('.rate input').forEach(input => {
     input.addEventListener('change', event => {
         if (event.target.checked) {
             const rating = parseInt(event.target.value);
             const emojiDisplay = document.getElementById('emoji-display');
+
             let emoji;
 
-            switch (rating) {
-                case 1:
-                    emoji = 'Thanks For Rating Us!😠'; // Very Bad
-                    break;
-                case 2:
-                    emoji = 'Thanks For Rating Us!🙁'; // Bad
-                    break;
-                case 3:
-                    emoji = 'Thanks For Rating Us!🙂'; // Good
-                    break;
-                case 4:
-                    emoji = 'Thanks For Rating Us!😃'; // Very Good
-                    break;
-                case 5:
-                    emoji = 'Thanks For Rating Us!😍'; // Excellent
-                    break;
-                default:
-                    emoji = ''; // In case of no valid rating
-            }
+           switch (rating) {
+    case 1:
+        emoji = '<span style="font-weight: bold; font-size: 22px;">Thanks For Rating Us! 😢</span>'; // Very Bad
+        break;
+    case 2:
+         emoji = '<span style="font-weight: bold; font-size: 22px;">Thanks For Rating Us! 🙁</span>'; // Bad
+        break;
+    case 3:
+        emoji = '<span style="font-weight: bold; font-size: 22px;">Thanks For Rating Us! 🙂</span>'; // Good
+        break;
+    case 4:
+        emoji = '<span style="font-weight: bold; font-size: 22px;">Thanks For Rating Us! 😃</span>'; // Very Good
+        break;
+    case 5:
+        emoji = '<span style="font-weight: bold; font-size: 22px;">Thanks For Rating Us! 😍</span>'; // Excellent
+        break;
+    default:
+        emoji = ''; // In case of no valid rating
+}
 
-            emojiDisplay.textContent = emoji;
+    document.getElementById('feedbackMessage').innerHTML = emoji;
+
+            
             emojiDisplay.style.display = 'block'; // Show the emoji display
         }
     });
 });
-
-async function submitRating(userId, laptopId, userDetails) {
+async function submitRating(userId, laptopId) {
     const ratings = document.getElementsByName('rate');
     const selectedRating = Array.from(ratings).find(radio => radio.checked)?.value;
 
@@ -121,24 +132,33 @@ async function submitRating(userId, laptopId, userDetails) {
     }
 
     try {
-        // Attempt to insert the new rating into the ratings table
-        const { data, error } = await supabase
+        const { data: existingRatings, error: ratingsError } = await supabase
             .from('ratings')
-            .insert([
-                { laptop_id: laptopId, userinformation_id: userId, ratings: selectedRating }
-            ]);
+            .select('id')
+            .eq('laptop_id', laptopId)
+            .eq('userinformation_id', userId);
 
-        if (error) {
-            if (error.code === '23505') { // PostgreSQL error code for unique violation
-                alert('You have already rated this laptop.');
-            } else {
-                console.error('Error inserting rating in Supabase:', error);
-            }
+        if (ratingsError) {
+            console.error('Error fetching existing ratings from Supabase:', ratingsError);
             return;
         }
 
-        alert('Rating submitted successfully.');
-        window.location.href = 'feed.html'; // Redirect to the feed page after successful update
+        if (existingRatings.length > 0) {
+            alert('You have already rated this laptop.');
+            return;
+        }
+
+        const { data: ratingData, error: ratingError } = await supabase
+            .from('ratings')
+            .insert([{ laptop_id: laptopId, userinformation_id: userId, ratings: selectedRating }]);
+
+        if (ratingError) {
+            console.error('Error inserting rating in Supabase:', ratingError);
+            return;
+        }
+
+        console.log('Rating successfully inserted in Supabase:', ratingData);
+        window.location.href = 'feed.html'; // Redirect after successful operation
     } catch (err) {
         console.error('Failed to save rating:', err);
     }
