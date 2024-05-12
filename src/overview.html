@@ -32,9 +32,14 @@
     />
     <script type="module" src="./js/name.js"></script>
     <script type="module" src="./js/overview.js"></script>
+    <!-- <script src="updateImage.js"></script> -->
     <meta name="theme-color" content="#31d53d" />
   </head>
   <body>
+    <form id="form_add" enctype="multipart/form-data">
+      <input type="file" name="image_path" id="image_path">
+      <button type="submit">Update Image</button>
+  </form>
     <!--FIRST ROW-->
     <div class="container-fluid" id="container-fluid_view">
       <div class="row align-items-center px-4 pt-2">

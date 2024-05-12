@@ -1,27 +1,89 @@
 // Importing the Supabase client initialization assumed to be configured in "name.js"
 import { supabase } from "./name";
 
-const itemsImageUrl = "https://vlzwiqqexbsievtuzfgm.supabase.co/storage/v1/object/public/laptops/";
-
 document.addEventListener("DOMContentLoaded", function () {
-    const imgElement = document.getElementById("image_display");
-    const defaultImagePath = 'path_to_correct_default_image.jpg';
-    let laptop_info = localStorage.getItem("laptop_info");
+    const form_add = document.getElementById("form_add");
+    loadLaptopDetails();  // Load laptop details on page load
 
+    form_add.onsubmit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form_add);
+        const image = formData.get("image_path");
+
+        if (image && image.size > 0) {
+            // Upload or update the image in the storage
+            const { data: storageData, error: storageError } = await supabase.storage
+                .from("laptops")
+                .upload("public/" + image.name, image, {
+                    cacheControl: "3600",
+                    upsert: true,
+                });
+
+            if (storageError) {
+                console.error("Storage error:", storageError.message);
+                alert("Failed to upload image: " + storageError.message);
+                return;
+            }
+
+            const imagePath = storageData.path;
+            updateLaptopDetails(imagePath); // Update laptop details with the new image path
+        } else {
+            updateLaptopDetails(); // Update laptop details without changing the image
+        }
+    };
+});
+
+function loadLaptopDetails() {
+    let laptop_info = localStorage.getItem("laptop_info");
     if (laptop_info) {
         laptop_info = JSON.parse(laptop_info);
         document.getElementById("model").value = laptop_info.model;
         document.getElementById("price").value = laptop_info.price;
         document.getElementById("specs").value = laptop_info.specs;
         document.getElementById("condition").value = laptop_info.condition;
-        imgElement.src = laptop_info.image_path ? (itemsImageUrl + laptop_info.image_path) : defaultImagePath;
-    } else {
-        imgElement.src = defaultImagePath;
+        // Not displaying the image
+    }
+}
+
+async function updateLaptopDetails(imagePath = null) {
+    const laptopId = localStorage.getItem("laptop_id");
+    if (!laptopId) {
+        console.error("No laptop ID found.");
+        alert("No laptop ID found.");
+        return;
     }
 
-    setupSaveButton();
-    setupDeleteButton();
-});
+    const model = document.getElementById("model").value;
+    const price = document.getElementById("price").value;
+    const specs = document.getElementById("specs").value;
+    const condition = document.getElementById("condition").value;
+
+    const updateData = {
+        model: model,
+        price: price,
+        specs: specs,
+        condition: condition
+    };
+
+    if (imagePath) {
+        updateData.image_path = imagePath; // Only include image_path in update if new image was uploaded
+    }
+
+    const { error: updateError } = await supabase
+        .from("laptops")
+        .update(updateData)
+        .eq("id", laptopId);
+
+    if (updateError) {
+        console.error("Error updating laptop details:", updateError.message);
+        alert("Failed to update laptop details: " + updateError.message);
+    } else {
+        console.log("Laptop details updated successfully");
+        alert("Laptop details updated successfully!");
+        window.location.reload(); // Reload the page to reflect changes
+    }
+}
 
 function setupSaveButton() {
     const saveButton = document.getElementById("buttonSave");

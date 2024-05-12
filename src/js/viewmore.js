@@ -77,6 +77,39 @@ function setupRatingSubmission() {
         await submitRating();
     });
 }
+document.querySelectorAll('.rate input').forEach(input => {
+    input.addEventListener('change', event => {
+        if (event.target.checked) {
+            const rating = parseInt(event.target.value);
+            const emojiDisplay = document.getElementById('emoji-display');
+            let emoji;
+
+            switch (rating) {
+                case 1:
+                    emoji = 'Thanks For Rating Us!😠'; // Very Bad
+                    break;
+                case 2:
+                    emoji = 'Thanks For Rating Us!🙁'; // Bad
+                    break;
+                case 3:
+                    emoji = 'Thanks For Rating Us!🙂'; // Good
+                    break;
+                case 4:
+                    emoji = 'Thanks For Rating Us!😃'; // Very Good
+                    break;
+                case 5:
+                    emoji = 'Thanks For Rating Us!😍'; // Excellent
+                    break;
+                default:
+                    emoji = ''; // In case of no valid rating
+            }
+
+            emojiDisplay.textContent = emoji;
+            emojiDisplay.style.display = 'block'; // Show the emoji display
+        }
+    });
+});
+
 
 async function submitRating() {
     const ratings = document.getElementsByName('rate');
