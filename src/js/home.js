@@ -3,6 +3,10 @@ import { supabase } from "./name";
 //const userId = localStorage.getItem("user_id");
 //console.log("User ID:", userId);
 
+
+const itemsImageUrl =
+  "https://vlzwiqqexbsievtuzfgm.supabase.co/storage/v1/object/public/laptops/";
+getDatas();
 async function getDatas() {
     let { data: laptops, error } = await supabase.from("laptops").select("*");
 
@@ -15,7 +19,9 @@ async function getDatas() {
             container += `
             <div class="col">
             <div class="card" id="cards" data-id="${data.id}" >
-                <img src="${data.image_path}" class="card-img-top pt-2 mx-auto" alt="...">
+                <img data-id="${data.id}" src="${
+                  itemsImageUrl + data.image_path
+                }" class="card-img-top pt-2 mx-auto" alt="...">
                 <div class="card-body">
                   <div class="row text-center">
                     <h3 class="card-title">${data.model}</h3>
@@ -36,4 +42,4 @@ async function getDatas() {
     }
 }
 
-getDatas();
+
