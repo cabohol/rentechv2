@@ -1,4 +1,3 @@
-// Importing the Supabase client initialization assumed to be configured in "name.js"
 import { supabase } from "./name";
 
 const itemsImageUrl = "https://vlzwiqqexbsievtuzfgm.supabase.co/storage/v1/object/public/laptops/";
@@ -32,6 +31,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             if (userDetails) {
                 displayUserDetails(userDetails);
+                setupRatingSubmission(userDetails.id, laptopInfo.id, userDetails); // Pass user ID, laptop ID, and userDetails to setupRatingSubmission
             } else {
                 console.log("No user details found for the provided user ID.");
             }
@@ -41,32 +41,30 @@ document.addEventListener('DOMContentLoaded', async function () {
     } else {
         console.log('No userinformation_id provided in laptopInfo');
     }
-
-    setupRatingSubmission();
 });
 
 function displayLaptopDetails(laptopInfo) {
-    console.log("Displaying laptop details:", laptopInfo); // Log the laptop info
-    document.getElementById("model").textContent = laptopInfo.model || "Not available";
-    document.getElementById("price").textContent = laptopInfo.price || "Not available";
-    document.getElementById("specs").textContent = laptopInfo.specs || "Not available";
-    document.getElementById("condition").textContent = laptopInfo.condition || "Not available";
+    document.getElementById("model").textContent = "Model :  " + laptopInfo.model || "Not available";
+    document.getElementById("price").textContent = "Price :  Php " + laptopInfo.price + ".00" || "Not available";
+    document.getElementById("specs").textContent = "Specification :  " + laptopInfo.specs || "Not available";
+    document.getElementById("condition").textContent = "Condition :  " + laptopInfo.condition || "Not available";
     let imgElement = document.getElementById("image_path");
     imgElement.src = laptopInfo.image_path ? itemsImageUrl + laptopInfo.image_path : itemsImageUrl + "default_image.png";
     imgElement.alt = laptopInfo.image_path ? "Laptop Image" : "Not available";
-    localStorage.setItem("laptopId", laptopInfo.id);
 }
 
 function displayUserDetails(userDetails) {
-    console.log("Displaying user details:", userDetails); // Log the user details
-    document.getElementById("first_name").textContent = "Name: " + userDetails.first_name + " " + userDetails.last_name;
-    document.getElementById("contact_number").textContent = "Contact #: " + userDetails.contact_number;
-    document.getElementById("college_name").textContent = "College: " + userDetails.college_name;
+    document.getElementById("first_name").textContent = "Name : " + userDetails.first_name + " " + userDetails.last_name;
+    document.getElementById("contact_number").textContent = "Contact # : " + userDetails.contact_number;
+    document.getElementById("college_name").textContent = "College : " + userDetails.college_name;
     document.getElementById("fb_link").href = userDetails.fb_link;
-    document.getElementById("fb_link").children[0].textContent = userDetails.first_name + " " + userDetails.last_name;
+    document.getElementById("fb_link").children[1].textContent = userDetails.first_name + " " + userDetails.last_name;
 }
 
-function setupRatingSubmission() {
+console.log("User ID being used for rating:", userId);
+
+async function setupRatingSubmission(userId, laptopId, userDetails) {
+    console.log("Setup rating with User ID:", userId);  // Check if the correct user ID is being passed
     const submitBtn = document.getElementById('feedbtn');
     if (!submitBtn) {
         console.error('Submit button not found');
@@ -74,9 +72,12 @@ function setupRatingSubmission() {
     }
     submitBtn.addEventListener('click', async function(event) {
         event.preventDefault(); // Prevent the form from submitting which would refresh the page
-        await submitRating();
+        console.log("Submitting rating for User ID:", userId);  // Log to verify right before submission
+        await submitRating(userId, laptopId, userDetails);
     });
 }
+
+
 document.querySelectorAll('.rate input').forEach(input => {
     input.addEventListener('change', event => {
         if (event.target.checked) {
@@ -110,33 +111,33 @@ document.querySelectorAll('.rate input').forEach(input => {
     });
 });
 
-
-async function submitRating() {
+async function submitRating(userId, laptopId, userDetails) {
     const ratings = document.getElementsByName('rate');
     const selectedRating = Array.from(ratings).find(radio => radio.checked)?.value;
-    const laptopId = localStorage.getItem("laptopId");
 
     if (!selectedRating) {
         alert('Please select a rating.');
         return;
     }
-    if (!laptopId) {
-        console.error('No laptop ID found for updating rating.');
-        return;
-    }
 
     try {
+        // Attempt to insert the new rating into the ratings table
         const { data, error } = await supabase
-            .from('laptops')
-            .update({ ratings: selectedRating })
-            .match({ id: laptopId });
+            .from('ratings')
+            .insert([
+                { laptop_id: laptopId, userinformation_id: userId, ratings: selectedRating }
+            ]);
 
         if (error) {
-            console.error('Error updating rating in Supabase:', error);
+            if (error.code === '23505') { // PostgreSQL error code for unique violation
+                alert('You have already rated this laptop.');
+            } else {
+                console.error('Error inserting rating in Supabase:', error);
+            }
             return;
         }
 
-        console.log('Rating successfully updated in Supabase:', data);
+        alert('Rating submitted successfully.');
         window.location.href = 'feed.html'; // Redirect to the feed page after successful update
     } catch (err) {
         console.error('Failed to save rating:', err);

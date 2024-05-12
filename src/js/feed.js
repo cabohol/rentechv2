@@ -18,6 +18,7 @@ async function loadAllLaptops() {
   }
 
   allLaptops = laptops;  // Store the fetched laptops globally
+  laptops.forEach(laptop => fetchAndDisplayRatings(laptop.id));  // Fetch and display ratings for each laptop
   displayLaptops(allLaptops);  // Display all laptops initially
 }
 
@@ -27,8 +28,6 @@ function displayLaptops(laptops) {
   container.innerHTML = "";  // Clear the container before loading new data
 
   laptops.forEach((laptop) => {
-    const ratingStars = renderRatingStars(laptop.ratings);
-    console.log('Rating for', laptop.model, ':', ratingStars);  // Debugging output
     container.innerHTML += `
       <div class="col-lg-4 py-2">
         <div class="card mx-auto" data-id="${laptop.id}">
@@ -36,7 +35,7 @@ function displayLaptops(laptops) {
           <div class="card-body">
             <h3 class="card-title text-center"><a style="text-decoration: none;" href="viewmore.html?laptopId=${laptop.id}" class="link-dark">${laptop.model}</a></h3>
             <p class="card-text text-center">Php ${laptop.price}.00/hr</p>
-            <p class="text-center">${ratingStars}</p>  <!-- Display stars here -->
+            <div class="text-center" id="ratings-${laptop.id}">Loading ratings...</div>  <!-- Placeholder for star ratings -->
           </div>
         </div>
       </div>
@@ -44,18 +43,30 @@ function displayLaptops(laptops) {
   });
 }
 
-function renderRatingStars(rating) {
-  let starsFilled = parseInt(rating, 10); // Convert rating to an integer
-  let stars = '';
-  for (let i = 1; i <= 5; i++) {
-    if (i <= starsFilled) {
-      stars += `<i class="fas fa-star" style="color: #ffc700;"></i>`; // Filled star
-    } else {
-      stars += `<i class="far fa-star" style="color: #ccc;"></i>`; // Empty star
+async function fetchAndDisplayRatings(laptopId) {
+    try {
+        const { data: ratings, error } = await supabase
+            .from('ratings')
+            .select('ratings')
+            .eq('laptop_id', laptopId);
+
+        if (error) {
+            console.error('Error fetching ratings:', error);
+            return;
+        }
+
+        const averageRating = ratings.reduce((acc, curr) => acc + curr.ratings, 0) / ratings.length;
+        displayStars(averageRating, laptopId);
+    } catch (err) {
+        console.error('Error fetching and displaying ratings:', err);
     }
-  }
-  return stars; // Returns a string with HTML for the stars
 }
 
-
-
+function displayStars(averageRating, laptopId) {
+    const roundedRating = Math.round(averageRating * 2) / 2; // Round to nearest half
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        stars += i <= roundedRating ? `<i class="fas fa-star"></i>` : `<i class="far fa-star"></i>`; // Using conditional (ternary) operator for brevity
+    }
+    document.getElementById(`ratings-${laptopId}`).innerHTML = stars;
+}

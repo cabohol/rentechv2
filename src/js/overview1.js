@@ -5,10 +5,14 @@ let laptops = []; // Tukuyin ang laptops sa labas ng getDatas function at bigyan
 
 const itemsImageUrl =
   "https://vlzwiqqexbsievtuzfgm.supabase.co/storage/v1/object/public/laptops/";
+
+
+
+
 async function getDatas() {
   let { data, error } = await supabase.from("laptops").select("*");
   laptops = data || []; // Isalin ang data sa laptops, kung wala, ilagay ang kahon
-  // console.log(laptops);
+  console.log(laptops);
   let userId = localStorage.getItem("user_id");
   if (error) {
     console.error("Error fetching laptops:", error.message);
@@ -16,7 +20,7 @@ async function getDatas() {
     let container = "";
     laptops.forEach((data, index) => {
       if (data.userinformation_id == userId) {
-        container += ` 
+        container += `
           <div class="col">
             <div class="card" id="cards" data-id="${data.id}">
               <img src="${itemsImageUrl}${data.image_path}" class="card-img-top pt-2 mx-auto" alt="...">
@@ -25,7 +29,7 @@ async function getDatas() {
                   <h3 class="card-title">${data.model}</h3>
                   <p class="card-text"></p>
                   <div class="d-flex justify-content-center align-items-center">
-                    <button class="text-white custom-btn view-button" data-index="${index}">View</button>
+                    <button class="text-white custom-btn view-button" data-id="${data.id}" data-index="${index}">View</button>
                   </div>
                 </div>
               </div>
@@ -54,6 +58,23 @@ getDatas(); // Tawagin ang getDatas nang mauna upang kunin agad ang mga data
 document.getElementById("cardsContainer").addEventListener("click", function(event) {
   if (event.target.classList.contains("view-button")) {
     const index = parseInt(event.target.dataset.index);
+  
+
+
     testFunction(index);
+    localStorage.setItem('index', index);
+   
+    console.log(index);
+  }
+});
+
+document.addEventListener('click', function(event) {
+ 
+  if (event.target.classList.contains('view-button')) {
+   
+    const dataId = event.target.dataset.id;
+    localStorage.setItem('dataId', dataId);
+   
+    console.log('Data ID:', dataId);
   }
 });

@@ -32,14 +32,9 @@
     />
     <script type="module" src="./js/name.js"></script>
     <script type="module" src="./js/overview.js"></script>
-    <!-- <script src="updateImage.js"></script> -->
     <meta name="theme-color" content="#31d53d" />
   </head>
   <body>
-    <form id="form_add" enctype="multipart/form-data">
-      <input type="file" name="image_path" id="image_path">
-      <button type="submit">Update Image</button>
-  </form>
     <!--FIRST ROW-->
     <div class="container-fluid" id="container-fluid_view">
       <div class="row align-items-center px-4 pt-2">
@@ -59,13 +54,7 @@
       </div>
 
       <div class="container py-4 rounded mt-2" id="view_cont">
-        <div class="container">
-          <img
-            src="assets/imgs/lenovonew.png"
-            class="d-block w-75 mx-auto"
-            alt="..."
-          />
-        </div>
+       
       </div>
 
       <br />
@@ -78,74 +67,85 @@
         <h3 class="text-center mt-4">LAPTOP INFORMATION</h3>
         <br />
         <form id="form_add">
-          <div class="mb-3 mx-3">
-            <p>Model :</p>
-            <input
-              class="form-control form-control-lg"
-              type="text"
-              name="model"
-              id="model"
-              placeholder=""
-              aria-label=".form-control-lg example"
-              required
-            />
-            <br />
-            <p>Price per hour :</p>
-            <input
-              class="form-control form-control-lg"
-              type="number"
-              name="price"
-              id="price"
-              step=".01"
-              placeholder=""
-              aria-label=".form-control-lg example"
-              required
-            />
-            <br />
-            <p>Specification :</p>
-            <textarea
-              class="form-control form-control-lg"
-              type="text"
-              name="specs"
-              id="specs"
-              placeholder=""
-              aria-label=".form-control-lg example"
-              required
-            >
-            </textarea>
-            <br />
-            <p>Condition:</p>
-            <select
-              class="form-select"
-              name="condition"
-              id="condition"
-              aria-label="Default select example"
-              required
-            >
-              <option value="Old">Old</option>
-              <option value="New">New</option>
-              <option value="Slightly Use">Slightly Use</option>
-            </select>
+     
+            <div class="mb-3 mx-3">
+              <p>Model :</p>
+              <input
+                class="form-control form-control-lg"
+                type="text"
+                name="model"
+                id="model"
+                placeholder=""
+                aria-label=".form-control-lg example"
+                required
+              />
+              <br />
+              <p>Price per hour :</p>
+              <input
+                class="form-control form-control-lg"
+                type="number"
+                name="price"
+                id="price"
+                step=".01"
+                placeholder=""
+                aria-label=".form-control-lg example"
+                required
+              />
+              <br />
+              <p>Specification :</p>
+              <textarea
+                class="form-control form-control-lg"
+                type="text"
+                name="specs"
+                id="specs"
+                placeholder=""
+                aria-label=".form-control-lg example"
+                required
+              >
+              </textarea>
+              <br />
+              <p>Condition:</p>
+              <select
+                class="form-select"
+                name="condition"
+                id="condition"
+                aria-label="Default select example"
+                required
+              >
+                <option value="Old">Old</option>
+                <option value="New">New</option>
+                <option value="Slightly Use">Slightly Use</option>
+              </select>
 
-            <br />
-            <br />
-            <label for="image_path" class="form-label">Upload Photo :</label>
-            <input type="file" id="image_path" name="image_path" class="form-control"/>
+               <br>
+               <br>
+              <label for="formFile" class="form-label">Upload Photo :</label>
+              <input
+                class="form-control"
+                type="file"
+                name="image_path"
+                id="image_path"
+              />
 
-          </div>
-          <img id="image_display" src="path_to_default_image.jpg" alt="Default Image">
-
-          <br />
-
-          <div class="row align-items-center px-5 pt-3">
-            <div class="col text-start">
-              <button id="buttonDelete" class="btn btn-danger">Delete</button>
+              
             </div>
-            <div class="col text-end">
-              <button id="buttonSave" class="btn btn-success">Save</button>
-            </div>
-          </div>
+  
+            <br />
+        
+            
+              <div class="row align-items-center px-5 pt-3" id="get_data">
+                <div class="col text-start">
+                  <button id="buttonDelete" class="btn btn-dark text-white">Delete</button>
+                </div>
+                <div class="col text-end">
+                  <button id="buttonsave" type="submit" class="btn btn-success">Save</button>
 
+                </div>
+              </div>
+        
+          
+
+         
           <br />
           <br />
         </form>
@@ -204,5 +204,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="./js/capacitor-welcome.js" type="module"></script>
+ 
+ 
+   
+ 
   </body>
 </html>
